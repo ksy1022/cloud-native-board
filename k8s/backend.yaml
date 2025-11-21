@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+  namespace: board-app
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+  namespace: board-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          # 나중에 Docker Hub에 푸시할 이미지 이름으로 바꿔줌
+          image: yeob1022/board-backend:latest
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: "postgres-svc"
+            - name: DB_NAME
+              value: "boarddb"
+            - name: DB_USER
+              value: "admin"
+            - name: DB_PASS
+              value: "admin123"
+          ports:
+            - containerPort: 5000
